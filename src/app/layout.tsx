@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThirdwebProvider } from "thirdweb/react";
+import Navbar from "./components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThirdwebProvider>{children}</ThirdwebProvider>
+        <ThirdwebProvider>
+          <main className="container max-w-[1280px] xl:mx-auto px-2">
+            <Navbar />
+            {children}
+          </main>
+        </ThirdwebProvider>
       </body>
     </html>
   );
