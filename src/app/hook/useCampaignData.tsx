@@ -28,7 +28,7 @@ const useCampaignData = (campaignAddress: string) => {
     params: [],
   });
 
-  const { data: campaignDeadline, isLoading: isLoadingDeadline } = useReadContract({
+  const { data: deadline, isLoading: isLoadingDeadline } = useReadContract({
     contract,
     method: "function deadline() view returns (uint256)",
     params: [],
@@ -40,13 +40,43 @@ const useCampaignData = (campaignAddress: string) => {
     params: [],
   });
 
+  const { data: campaignTiers , isLoading: isLoadingTiers } = useReadContract({
+    contract,
+    method:
+      "function getTiers() view returns ((string name, uint256 amount, uint256 backers)[])",
+    params: [],
+  });
+
+  const { data: campaignOwner, isLoading: isLoadingOwner } = useReadContract({
+    contract,
+    method: "function owner() view returns (address)",
+    params: [],
+  });
+
+  const { data: campaignState, isLoading: isLoadingState } = useReadContract({
+    contract,
+    method: "function state() view returns (uint8)",
+    params: [],
+  });
+
+  const progressBar = campaignGoal && campaignBalance
+  ? Math.min((Number(campaignBalance) / Number(campaignGoal)) * 100, 100)
+  : 0;
+
+  const campaignDeadline = deadline && new Date(Number(deadline) * 1000).toUTCString();
+  
   return {
+    contract,
     campaignName,
     campaignDescription,
     campaignGoal,
-    campaignDeadline,
     campaignBalance,
-    isLoading: isLoadingName || isLoadingDescription || isLoadingGoal || isLoadingDeadline || isLoadingBalance,
+    campaignDeadline,
+    campaignState,
+    campaignOwner,
+    campaignTiers,
+    progressBar,
+    isLoading: isLoadingName || isLoadingDescription || isLoadingGoal || isLoadingDeadline || isLoadingBalance || isLoadingTiers || isLoadingOwner || isLoadingState,
   };
 };
 
