@@ -3,7 +3,7 @@
 import { getContract } from "thirdweb";
 import { client } from "./client";
 import { sepolia } from "thirdweb/chains";
-import { CROWDFUNDING_FACTORY_ADDRESS } from "./constant/contracts";
+// import { CROWDFUNDING_FACTORY_ADDRESS } from "./constant/contracts";
 import { useReadContract } from "thirdweb/react";
 import CampaignCard from "./components/CampaignCard";
 
@@ -11,7 +11,7 @@ export default function Home() {
   const contract = getContract({
     client: client,
     chain: sepolia,
-    address: CROWDFUNDING_FACTORY_ADDRESS,
+    address: process.env.NEXT_PUBLIC_TEMPLATE_CROWDFUNDING_FACTORY_ADDRESS as string,
   });
 
   const { data: campaigns, isLoading } = useReadContract({
@@ -37,7 +37,7 @@ export default function Home() {
               <CampaignCard key={index} campaignAddress={campaign.campaignAddress} />
             ))
           ) : (
-            <p className="col-span-full text-center text-lg text-gray-500">
+            <p className="text-center text-lg text-gray-500">
               No campaigns found.
             </p>
           )}

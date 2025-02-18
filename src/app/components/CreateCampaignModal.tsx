@@ -1,8 +1,8 @@
 'use client';
 import { useState } from "react";
-import { ThirdwebContract, prepareContractCall } from "thirdweb";
+import { ThirdwebContract } from "thirdweb";
 import { deployPublishedContract } from "thirdweb/deploys";
-import { TransactionButton, useActiveAccount } from "thirdweb/react";
+import { useActiveAccount } from "thirdweb/react";
 import { client } from "../client";
 import { sepolia } from "thirdweb/chains";
 
@@ -13,30 +13,75 @@ type CreateCampaignModalProps = {
 
 const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalProps) => {
   const account = useActiveAccount();
-  const [campaignName, setCampaignName] = useState("");
-  const [campaignDescription, setCampaignDescription] = useState("");
+  const [campaignName, setCampaignName] = useState<string>("");
+  const [campaignDescription, setCampaignDescription] = useState<string>("");
   const [campaignGoal, setCampaignGoal] = useState<bigint>(1n);
-  const [campaignDuration, setCampaignDuration] = useState(30);
+  const [campaignDuration, setCampaignDuration] = useState<number>(30);
   const [isDeployingContract, setIsDeployingContract] = useState(false);
+  
+  const [errors, setErrors] = useState({
+    campaignName: "",
+    campaignDescription: "",
+    campaignGoal: "",
+    campaignDuration: ""
+  });
 
-  const handleDeplyoContract = async () => {
+  //  Validate inputs before deployment
+  const validateFields = () => {
+    let newErrors = { campaignName: "", campaignDescription: "", campaignGoal: "", campaignDuration: "" };
+    let isValid = true;
+
+    if (!campaignName.trim()) {
+      newErrors.campaignName = "Campaign name is required.";
+      isValid = false;
+    }
+
+    if (!campaignDescription.trim()) {
+      newErrors.campaignDescription = "Description is required.";
+      isValid = false;
+    }
+
+    if (!campaignGoal || campaignGoal <= 0n) {
+      newErrors.campaignGoal = "Goal must be greater than 0.";
+      isValid = false;
+    }
+
+    if (!campaignDuration || campaignDuration <= 0) {
+      newErrors.campaignDuration = "Duration must be at least 1 day.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleDeployContract = async () => {
+    if (!validateFields()) return; // Stop execution if validation fails
+
+    setIsDeployingContract(true);
     try {
       const contractAddress = await deployPublishedContract({
         client: client,
         chain: sepolia,
         account: account!,
-        contractId: "",
-        contractParams: [
-          campaignName,
-          campaignDescription,
-          campaignGoal,
-          campaignDuration
-        ],
-        publisher: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_ADDRESS,
-        version: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_VERSION,
-      });      
+        contractId: "CrowdFunding",
+        contractParams: {
+          _name: campaignName, 
+          _description: campaignDescription,
+          _goal: campaignGoal,
+          _durationInDays: BigInt(campaignDuration),
+        },
+        publisher: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_ADDRESS as string,
+        version: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_VERSION as string,
+      });
+
+      alert(`Campaign created successfully at ${contractAddress}`);
     } catch (error) {
       console.log(error);
+      alert(`Transaction Failed: ${error}`);
+    } finally {
+      setIsDeployingContract(false);
+      setIsModalOpen(false);
     }
   };
 
@@ -63,9 +108,10 @@ const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalPr
               type="text"
               value={campaignName}
               onChange={(e) => setCampaignName(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 outline-none"
+              className={`w-full mt-1 px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-purple-500 ${errors.campaignName ? "border-red-500" : ""}`}
               placeholder="Enter campaign name"
             />
+            {errors.campaignName && <p className="text-sm text-red-500">{errors.campaignName}</p>}
           </div>
 
           {/* Campaign Description */}
@@ -74,22 +120,27 @@ const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalPr
             <textarea
               value={campaignDescription}
               onChange={(e) => setCampaignDescription(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 outline-none"
+              className={`w-full mt-1 px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-purple-500 ${errors.campaignDescription ? "border-red-500" : ""}`}
               placeholder="Enter description"
             />
+            {errors.campaignDescription && <p className="text-sm text-red-500">{errors.campaignDescription}</p>}
           </div>
 
           {/* Campaign Goal */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Goal Amount (Gwei | $)</label>
+            <label className="text-sm font-medium text-gray-700">Goal Amount (Gwei)</label>
             <input
               type="number"
               value={campaignGoal.toString()}
-              onChange={(e) => setCampaignGoal(BigInt(e.target.value))}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 outline-none"
+              onChange={(e) => {
+                const value = e.target.value.trim();
+                setCampaignGoal(value === "" || isNaN(Number(value)) ? 1n : BigInt(value));
+              }}
+              className={`w-full mt-1 px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-purple-500 ${errors.campaignGoal ? "border-red-500" : ""}`}
               placeholder="Enter amount in Gwei"
               min="1"
             />
+            {errors.campaignGoal && <p className="text-sm text-red-500">{errors.campaignGoal}</p>}
           </div>
 
           {/* Campaign Duration */}
@@ -98,33 +149,26 @@ const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalPr
             <input
               type="number"
               value={campaignDuration}
-              onChange={(e) => setCampaignDuration(parseInt(e.target.value))}
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 outline-none"
+              onChange={(e) => {
+                const value = e.target.value.trim();
+                setCampaignDuration(value === "" || isNaN(Number(value)) ? 30 : parseInt(value));
+              }}
+              className={`w-full mt-1 px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-purple-500 ${errors.campaignDuration ? "border-red-500" : ""}`}
               min="1"
             />
+            {errors.campaignDuration && <p className="text-sm text-red-500">{errors.campaignDuration}</p>}
           </div>
 
           {/* Create Campaign Button */}
-          <TransactionButton
-            unstyled
-            transaction={() =>
-              prepareContractCall({
-                contract,
-                method: "function createCampaign(string,string,uint256,uint256)",
-                params: [campaignName, campaignDescription, campaignGoal, BigInt(campaignDuration)],
-              })
-            }
-            onTransactionConfirmed={() => {
-              setIsModalOpen(false);
-              alert("Campaign Created Successfully!");
-            }}
-            onError={(error) => {
-              alert(`Transaction Failed: ${error.message}`)
-            }}
-            className="w-full bg-purple-600 text-white py-2 rounded-md font-medium shadow-md hover:bg-purple-800 transition-all"
+          <button
+            disabled={isDeployingContract}
+            onClick={handleDeployContract}
+            className={`w-full py-2 rounded-md font-medium shadow-md transition-all ${
+              isDeployingContract ? "bg-gray-400 cursor-not-allowed" : "bg-purple-600 text-white hover:bg-purple-800"
+            }`}
           >
-            Create Campaign
-          </TransactionButton>
+            {isDeployingContract ? "Deploying..." : "Create Campaign"}
+          </button>
         </div>
       </div>
     </div>

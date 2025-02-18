@@ -3,12 +3,10 @@ import { useState } from 'react';
 import { client } from '@/app/client';
 import CampaignCard from '@/app/components/CampaignCard';
 import CreateCampaignModal from '@/app/components/CreateCampaignModal';
-import { CROWDFUNDING_FACTORY_ADDRESS } from '@/app/constant/contracts';
 import React from 'react';
 import { getContract } from 'thirdweb';
 import { sepolia } from 'thirdweb/chains';
 import { useActiveAccount, useReadContract } from 'thirdweb/react';
-import Link from 'next/link';
 
 function DashboardPage() {
   const account = useActiveAccount();
@@ -17,7 +15,7 @@ function DashboardPage() {
   const contract = getContract({
     client: client,
     chain: sepolia,
-    address: CROWDFUNDING_FACTORY_ADDRESS,
+    address: process.env.NEXT_PUBLIC_TEMPLATE_CROWDFUNDING_FACTORY_ADDRESS as string,
   });
 
   const { data: campaigns, isLoading } = useReadContract({
@@ -28,16 +26,18 @@ function DashboardPage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className=" px-4 py-6">
       {/* Dashboard Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">My Campaigns</h1>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-purple-600 text-white px-5 py-2 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-800 hover:shadow-lg active:scale-95"
-        >
-          + Create Campaign
-        </button>
+        <div className=''>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-purple-600 text-white px-5 py-2 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-800 hover:shadow-lg active:scale-95"
+          >
+            + Create Campaign
+          </button>
+        </div>
       </div>
 
       {/* Campaigns Grid */}
