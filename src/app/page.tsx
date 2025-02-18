@@ -31,7 +31,7 @@ export default function Home() {
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-purple-500"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {campaigns?.length && campaigns?.length > 0 ? (
             campaigns.map((campaign, index) => (
               <CampaignCard key={index} campaignAddress={campaign.campaignAddress} />

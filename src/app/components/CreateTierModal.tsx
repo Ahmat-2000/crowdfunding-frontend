@@ -41,7 +41,7 @@ const CreateTierModal = ({ setIsModalOpen, contract }: CreateTierModalProps) => 
 
           {/* Tier Amount */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Tier Amount (Gwei)</label>
+            <label className="text-sm font-medium text-gray-700">Tier Amount (Gwei | $)</label>
             <input
               type="number"
               value={tierAmount.toString()}

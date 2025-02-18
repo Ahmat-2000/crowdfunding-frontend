@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ConnectButton, lightTheme, useActiveAccount } from "thirdweb/react";
 import { client } from "../client";
 import { Twirl as Hamburger } from "hamburger-react"; // Animated menu button
+import { createWallet } from "thirdweb/wallets";
+import { sepolia } from "thirdweb/chains";
 
 const Navbar = () => {
   const account = useActiveAccount();
@@ -36,7 +38,7 @@ const Navbar = () => {
             </li>
             {account && (
               <li>
-                <Link className="text-sm font-medium hover:text-purple-700 transition" href="/dashboard">
+                <Link className="text-sm font-medium hover:text-purple-700 transition" href={`/dashboard/${account?.address}`}>
                   Dashboard
                 </Link>
               </li>
@@ -55,9 +57,15 @@ const Navbar = () => {
           <div className="hidden sm:block">
             <ConnectButton 
               client={client}
+              wallets={[
+                createWallet("io.metamask"),
+                createWallet("com.coinbase.wallet"),
+                createWallet("me.rainbow"),
+              ]}
+              chain={sepolia}
               theme={lightTheme()}
               detailsButton={{
-                style: { maxHeight: "50px" }
+                style: { maxHeight: "50px",}
               }}
             />
           </div>
