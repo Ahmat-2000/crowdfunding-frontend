@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ThirdwebContract, prepareContractCall } from "thirdweb";
 import { TransactionButton } from "thirdweb/react";
+import { useFeedback } from "../context/feadback";
 
 type CreateTierModalProps = {
   setIsModalOpen: (value: boolean) => void;
@@ -10,6 +11,7 @@ type CreateTierModalProps = {
 const CreateTierModal = ({ setIsModalOpen, contract }: CreateTierModalProps) => {
   const [tierName, setTierName] = useState("");
   const [tierAmount, setTierAmount] = useState<bigint>(1n);
+  const { setFeedback } = useFeedback();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm p-4">
@@ -64,12 +66,12 @@ const CreateTierModal = ({ setIsModalOpen, contract }: CreateTierModalProps) => 
             }
             onTransactionConfirmed={() => {
               setIsModalOpen(false);
-              alert("Tier Created Successfully!");
+              setFeedback({message: "Tier Created Successfully!", type: "success"});
             }}
             onError={(error) => {
-              alert(`Transaction Failed: ${error.message}`)
+              setFeedback({message: error.message, type: "error"});
             }}
-            className="w-full bg-purple-600 text-white py-2 rounded-md font-medium shadow-md hover:bg-purple-800 transition-all"
+            className="w-full bg-purple-600 text-white p-3 rounded-md font-medium shadow-md hover:bg-purple-800 transition-all"
           >
             Create Tier
           </TransactionButton>

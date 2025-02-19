@@ -5,6 +5,7 @@ import { deployPublishedContract } from "thirdweb/deploys";
 import { useActiveAccount } from "thirdweb/react";
 import { client } from "../client";
 import { sepolia } from "thirdweb/chains";
+import { useFeedback } from "../context/feadback";
 
 type CreateCampaignModalProps = {
   setIsModalOpen: (value: boolean) => void;
@@ -19,7 +20,7 @@ const CreateCampaignModal = ({ setIsModalOpen, contract , setIsCreated}: CreateC
   const [campaignGoal, setCampaignGoal] = useState<bigint>(1n);
   const [campaignDuration, setCampaignDuration] = useState<number>(30);
   const [isDeployingContract, setIsDeployingContract] = useState(false);
-  
+  const {setFeedback} = useFeedback();
   const [errors, setErrors] = useState({
     campaignName: "",
     campaignDescription: "",
@@ -73,15 +74,13 @@ const CreateCampaignModal = ({ setIsModalOpen, contract , setIsCreated}: CreateC
         publisher: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_ADDRESS as string,
         version: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_VERSION as string,
       });
-  
-      alert(`Campaign created successfully at ${contractAddress}`);
-  
+      setFeedback({message:`Campaign created successfully at ${contractAddress}`, type: "success"});
       setIsModalOpen(false);
       setIsCreated(true); 
   
     } catch (error) {
       console.log(error);
-      alert(`Transaction Failed: ${error}`);
+      setFeedback({message: `Transaction Failed: ${error}` , type: "error"});
     } finally {
       setIsDeployingContract(false);
     }
@@ -131,7 +130,7 @@ const CreateCampaignModal = ({ setIsModalOpen, contract , setIsCreated}: CreateC
 
           {/* Campaign Goal */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Goal Amount (Gwei)</label>
+            <label className="text-sm font-medium text-gray-700">Goal Amount (Gwei | $)</label>
             <input
               type="number"
               value={campaignGoal.toString()}
@@ -166,7 +165,7 @@ const CreateCampaignModal = ({ setIsModalOpen, contract , setIsCreated}: CreateC
           <button
             disabled={isDeployingContract}
             onClick={handleDeployContract}
-            className={`w-full py-2 rounded-md font-medium shadow-md transition-all ${
+            className={`w-full p-3 rounded-md font-medium shadow-md transition-all ${
               isDeployingContract ? "bg-gray-400 cursor-not-allowed" : "bg-purple-600 text-white hover:bg-purple-800"
             }`}
           >

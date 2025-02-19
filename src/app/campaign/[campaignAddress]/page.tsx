@@ -15,8 +15,6 @@ const CampaignPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [extendDays, setExtendDays] = useState<number>(0);
   const {setFeedback } = useFeedback();
-  const [hasWithdrawn, setHasWithdrawn] = useState(false);
-
   const account = useActiveAccount();
   const { campaignAddress } = useParams();
 
@@ -39,7 +37,7 @@ const CampaignPage = () => {
   const isCampaignSuccessful = campaignState === 1;
   const isCampaignActive = campaignState === 0;
   const isCampaignFailed= campaignState === 2;
-
+  
   return (
     <div className="py-5 px-2">
       {isLoading ? (
@@ -72,14 +70,23 @@ const CampaignPage = () => {
 
                 <TransactionButton
                   unstyled
-                  disabled={isCampaignSuccessful && !hasWithdrawn}
-                  transaction={() => prepareContractCall({ contract, method: "function withdraw()" })}
+                  disabled={!isCampaignSuccessful || Number(campaignBalance) === 0}
+                  transaction={() =>
+                    prepareContractCall({ contract, method: "function withdraw()" })
+                  }
                   onTransactionConfirmed={() => {
-                    setFeedback({ message: "Funds Successfully Withdrawn!", type: "success" });
-                    setHasWithdrawn(true);
+                    setFeedback({
+                      message: "Funds Successfully Withdrawn!",
+                      type: "success",
+                    });
                   }}
-                  onError={(error) => setFeedback({ message: error.message, type: "error" })}
-                  className={getButtonClasses(isCampaignSuccessful && !hasWithdrawn, "bg-blue-500 hover:bg-blue-700")}
+                  onError={(error) =>
+                    setFeedback({ message: error.message, type: "error" })
+                  }
+                  className={getButtonClasses(
+                    !isCampaignSuccessful || Number(campaignBalance) === 0,
+                    "bg-blue-500 hover:bg-blue-700"
+                  )}
                 >
                   Withdraw
                 </TransactionButton>
@@ -133,32 +140,34 @@ const CampaignPage = () => {
           
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-gray-100 rounded-lg shadow-md">
 
-            <div className="font-semibold">🎯 Goal: 
-              <span className="font-medium">{campaignGoal} $</span>
+            <div className="font-semibold">🎯 Goal : 
+              <span className="font-medium"> {campaignGoal} $</span>
             </div>
 
-            <div className="font-semibold">💰 Raised: 
-              <span className="font-medium">{campaignBalance} $</span>
+            <div className="font-semibold">💰 Raised : 
+              <span className="font-medium"> {isCampaignSuccessful ? campaignGoal : campaignBalance} $</span>
+            </div>
+            
+            <div className="font-semibold">📝 State : 
+            {campaignState !== undefined && (
+              <span className={`${isCampaignActive? 'text-blue-600' : isCampaignSuccessful ? 'text-green-600' : 'text-red-600'} font-semibold ml-1`}>
+                {["Active", "Successful", "Failed"][campaignState]}
+              </span>)
+            }
             </div>
 
-            <div className="font-semibold">📝 State: 
-            {campaignState && (
-                <span className={`${campaignState === 0 ? 'text-blue-600' : campaignState === 1 ? 'text-green-600' : 'text-red-600'} font-semibold ml-1`}>
-                  {["Active", "Successful", "Failed"][campaignState]}
-                </span>)
-              }
+            <div className="font-semibold">⏸️ Paused : 
+              <span className={`font-bold ${paused ? "text-yellow-600" : "text-green-600"}`}> {paused ? "Yes" : "No"}</span>
             </div>
 
-            <div className="font-semibold">⏸️ Paused: 
-              <span className={`font-bold ${paused ? "text-yellow-600" : "text-green-600"}`}>{paused ? "Yes" : "No"}</span>
+            <div className="font-semibold">👤 Owner : 
+              {campaignOwner && ` ${campaignOwner.slice(0,5)}...${campaignOwner.slice(-5)}`}
             </div>
 
-            <div className="font-semibold">👤 Owner: 
-              {campaignOwner && `${campaignOwner.slice(0,5)}...${campaignOwner.slice(-5)}`}
-            </div>
-
-            <div className="font-semibold">💸 Withdrawn: 
-              <span className={`font-bold ${hasWithdrawn ? "text-green-600" : "text-red-600"}`}>{hasWithdrawn ? "Yes" : "No"}</span>
+            <div className="font-semibold">💸 Withdrawn :  
+              {campaignBalance !== undefined && (
+                <span className={`font-bold ${Number(campaignBalance) === 0 ? "text-green-600" : "text-red-600"}`}> {Number(campaignBalance) === 0 ? "Yes" : "No"}</span>
+              )}
             </div>
 
           </div>

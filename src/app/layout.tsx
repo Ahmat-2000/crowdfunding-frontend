@@ -8,9 +8,9 @@ import { FeedbackProvider } from "./context/feadback";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "thirdweb SDK + Next starter",
+  title: "Campaign",
   description:
-    "Starter template for using thirdweb SDK with Next.js App router",
+    "Collect money for a good cause",
 };
 
 export default function RootLayout({
@@ -22,12 +22,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThirdwebProvider>
-          <FeedbackProvider>
             <main className="container max-w-[1280px] xl:mx-auto px-2">
               <Navbar />
-              {children}
+              <FeedbackProvider>    
+                {children}
+              </FeedbackProvider>
             </main>
-          </FeedbackProvider>
         </ThirdwebProvider>
       </body>
     </html>

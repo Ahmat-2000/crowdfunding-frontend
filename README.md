@@ -1,59 +1,29 @@
+### **Présentation du Projet**
 
-![tw-banner](https://github.com/thirdweb-example/next-starter/assets/57885104/20c8ce3b-4e55-4f10-ae03-2fe4743a5ee8)
+Ce projet illustre une intégration complète entre la blockchain et une interface web moderne, permettant de créer des applications décentralisées robustes et conviviales. 
 
-# thirdweb-next-starter
+L’application permet aux utilisateurs de créer et gérer des campagnes de financement, avec des niveaux de contribution (funding tiers) personnalisables. Les fonctionnalités clés incluent :
 
-Starter template to build an onchain react native app with [thirdweb](https://thirdweb.com/) and [next](https://nextjs.org/).
+- **Création de campagnes on-chain** : Les utilisateurs peuvent lancer des campagnes avec un nom, une description, un objectif de financement et une durée.  
+- **Gestion des contributions** : Les contributeurs sélectionnent un niveau de contribution prédéfini, et le système gère automatiquement l’état de la campagne (Active, Successful, Failed).  
+- **Actions de gestion** : Le propriétaire de la campagne peut mettre en pause, prolonger la deadline, retirer les fonds ou rembourser les contributeurs si la campagne échoue.
+- **Feedback dynamique** : Un système global de notifications informe l’utilisateur des résultats des transactions (succès, erreur, informations).
 
-## Installation
+---
 
-Install the template using [thirdweb create](https://portal.thirdweb.com/cli/create)
+### **Technologies Utilisées**
 
-```bash
-  npx thirdweb create app --next
-```
+- **Next.js**  
+  Next.js est le framework choisi pour construire l’interface utilisateur côté client et côté serveur, offrant un rendu performant, du routage dynamique et des fonctionnalités avancées telles que l’hydratation côté client et la génération statique.
 
-## Environment Variables
+- **thirdweb**  
+  Thirdweb permet d’interagir facilement avec des smart contracts déployés sur la blockchain. Il offre des hooks et des composants préconçus pour réaliser des appels de contrat, gérer les transactions on-chain et déployer des contrats sans trop de complexité.
 
-To run this project, you will need to add the following environment variables to your .env file:
+- **Solidity**  
+  Les contrats intelligents (smart contracts) du projet sont écrits en Solidity. Ils gèrent la logique de financement, la gestion des tiers de contribution, le suivi des contributions, les retraits et remboursements, et la gestion de l’état de la campagne.
 
-`CLIENT_ID`
+- **Tailwind CSS**  
+  Tailwind CSS est utilisé pour la mise en page et le design de l’application. Il permet de créer une interface moderne, responsive et facilement personnalisable grâce à ses classes utilitaires.
 
-To learn how to create a client ID, refer to the [client documentation](https://portal.thirdweb.com/typescript/v5/client). 
-
-## Run locally
-
-Install dependencies
-
-```bash
-yarn
-```
-
-Start development server
-
-```bash
-yarn dev
-```
-
-Create a production build
-
-```bash
-yarn build
-```
-
-Preview the production build
-
-```bash
-yarn start
-```
-
-## Resources
-
-- [Documentation](https://portal.thirdweb.com/typescript/v5)
-- [Templates](https://thirdweb.com/templates)
-- [YouTube](https://www.youtube.com/c/thirdweb)
-- [Blog](https://blog.thirdweb.com)
-
-## Need help?
-
-For help or feedback, please [visit our support site](https://thirdweb.com/support)
+- **React**  
+  La bibliothèque React est utilisée pour construire les composants interactifs de l’application. Elle gère l’état local (par exemple, le mode édition, l’affichage de feedbacks) et permet de créer une expérience utilisateur fluide.
