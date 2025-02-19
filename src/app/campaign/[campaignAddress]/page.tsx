@@ -89,6 +89,25 @@ const CampaignPage = () => {
             <p className="">{campaignDeadline}</p>
           </div>
 
+          {/* ✅ Extend Deadline (Moved Here) */}
+          {isOwner && isCampaignActive && (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                placeholder="Days to extend"
+                value={extendDays}
+                onChange={(e) => setExtendDays(parseInt(e.target.value))}
+                className="px-3 py-2 border rounded-md w-20"
+              />
+              <TransactionButton
+                transaction={() => prepareContractCall({ contract, method: "function extendDeadline(uint256)", params: [BigInt(extendDays)] })}
+                onTransactionConfirmed={() => setFeedback("Deadline Extended!")}
+                className="px-5 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-700">
+                Extend Deadline
+              </TransactionButton>
+            </div>
+          )}
+
           {/* ✅ ProgressBar */}
           <div className="relative w-full bg-gray-300 rounded-lg h-6">
             <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-black">
@@ -125,42 +144,21 @@ const CampaignPage = () => {
             )}
           </div>
 
-          {/* ✅ Owner Actions */}
-          {isOwner && (
-            <div className="flex flex-col gap-4">
-              {/* ✅ Withdraw Funds */}
-              {isCampaignSuccessful && !hasWithdrawn && (
-                <TransactionButton
-                  transaction={() => prepareContractCall({ contract, method: "function withdraw()" })}
-                  onTransactionConfirmed={() => {
-                    setFeedback("Funds Successfully Withdrawn!");
-                    setHasWithdrawn(true);
-                  }}
-                  className="px-5 py-2 bg-green-600 text-white rounded-md shadow-md hover:bg-green-700">
-                  Withdraw Funds
-                </TransactionButton>
-              )}
-
-              {/* ✅ Extend Deadline */}
-              {isCampaignActive && (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    placeholder="Days to extend"
-                    value={extendDays}
-                    onChange={(e) => setExtendDays(parseInt(e.target.value))}
-                    className="px-3 py-2 border rounded-md w-20"
-                  />
-                  <TransactionButton
-                    transaction={() => prepareContractCall({ contract, method: "function extendDeadline(uint256)", params: [BigInt(extendDays)] })}
-                    onTransactionConfirmed={() => setFeedback("Deadline Extended!")}
-                    className="px-5 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-700">
-                    Extend Deadline
-                  </TransactionButton>
-                </div>
-              )}
+          {/* ✅ Bouton d'ajout de Tier (s'affiche uniquement en mode édition) */}
+          {isOwner && isCampaignActive && isEditing && (
+            <div className="flex justify-start mt-4">
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="px-5 py-2 bg-blue-500 font-medium text-gray-100 rounded-md shadow-md hover:bg-blue-700 w-auto"
+              >
+                + Add Tier
+              </button>
             </div>
           )}
+
+
+          {/* ✅ Modal de création de Tier */}
+          {isModalOpen && <CreateTierModal contract={contract} setIsModalOpen={setIsModalOpen} />}
 
           {/* ✅ Back to Campaigns */}
           <Link href="/" className="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md transition-all hover:bg-gray-800 hover:shadow-lg text-center mt-4 w-max">
