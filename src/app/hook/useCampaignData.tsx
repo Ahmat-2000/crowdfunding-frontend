@@ -58,7 +58,11 @@ const useCampaignData = (campaignAddress: string) => {
     method: "function state() view returns (uint8)",
     params: [],
   });
-
+  const { data: paused, isLoading: isLoadingPaused } = useReadContract({
+    contract,
+    method: "function paused() view returns (bool)",
+    params: [],
+  });
   const progressBar = campaignGoal && campaignBalance
   ? Math.min((Number(campaignBalance) / Number(campaignGoal)) * 100, 100)
   : 0;
@@ -76,7 +80,8 @@ const useCampaignData = (campaignAddress: string) => {
     campaignOwner,
     campaignTiers,
     progressBar,
-    isLoading: isLoadingName || isLoadingDescription || isLoadingGoal || isLoadingDeadline || isLoadingBalance || isLoadingTiers || isLoadingOwner || isLoadingState,
+    paused,
+    isLoading: isLoadingName || isLoadingDescription || isLoadingGoal || isLoadingDeadline || isLoadingBalance || isLoadingTiers || isLoadingOwner || isLoadingState || isLoadingPaused,
   };
 };
 
