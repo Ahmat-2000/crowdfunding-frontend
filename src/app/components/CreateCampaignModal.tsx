@@ -8,10 +8,11 @@ import { sepolia } from "thirdweb/chains";
 
 type CreateCampaignModalProps = {
   setIsModalOpen: (value: boolean) => void;
+  setIsCreated: (value: boolean) => void;
   contract: ThirdwebContract;
 };
 
-const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalProps) => {
+const CreateCampaignModal = ({ setIsModalOpen, contract , setIsCreated}: CreateCampaignModalProps) => {
   const account = useActiveAccount();
   const [campaignName, setCampaignName] = useState<string>("");
   const [campaignDescription, setCampaignDescription] = useState<string>("");
@@ -26,7 +27,6 @@ const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalPr
     campaignDuration: ""
   });
 
-  //  Validate inputs before deployment
   const validateFields = () => {
     let newErrors = { campaignName: "", campaignDescription: "", campaignGoal: "", campaignDuration: "" };
     let isValid = true;
@@ -56,8 +56,7 @@ const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalPr
   };
 
   const handleDeployContract = async () => {
-    if (!validateFields()) return; // Stop execution if validation fails
-
+    if (!validateFields()) return; 
     setIsDeployingContract(true);
     try {
       const contractAddress = await deployPublishedContract({
@@ -74,16 +73,20 @@ const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalPr
         publisher: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_ADDRESS as string,
         version: process.env.NEXT_PUBLIC_TEMPLATE_PUBLISHER_CONTRACT_VERSION as string,
       });
-
+  
       alert(`Campaign created successfully at ${contractAddress}`);
+  
+      setIsModalOpen(false);
+      setIsCreated(true); 
+  
     } catch (error) {
       console.log(error);
       alert(`Transaction Failed: ${error}`);
     } finally {
       setIsDeployingContract(false);
-      setIsModalOpen(false);
     }
   };
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm p-4">
@@ -151,7 +154,7 @@ const CreateCampaignModal = ({ setIsModalOpen, contract }: CreateCampaignModalPr
               value={campaignDuration}
               onChange={(e) => {
                 const value = e.target.value.trim();
-                setCampaignDuration(value === "" || isNaN(Number(value)) ? 30 : parseInt(value));
+                setCampaignDuration(value === "" || isNaN(Number(value)) ? 1 : parseInt(value));
               }}
               className={`w-full mt-1 px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-purple-500 ${errors.campaignDuration ? "border-red-500" : ""}`}
               min="1"

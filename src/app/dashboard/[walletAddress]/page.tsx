@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { client } from '@/app/client';
 import CampaignCard from '@/app/components/CampaignCard';
 import CreateCampaignModal from '@/app/components/CreateCampaignModal';
@@ -11,6 +11,7 @@ import { useActiveAccount, useReadContract } from 'thirdweb/react';
 function DashboardPage() {
   const account = useActiveAccount();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreated, setIsCreated] = useState(false);
   
   const contract = getContract({
     client: client,
@@ -18,19 +19,26 @@ function DashboardPage() {
     address: process.env.NEXT_PUBLIC_TEMPLATE_CROWDFUNDING_FACTORY_ADDRESS as string,
   });
 
-  const { data: campaigns, isLoading } = useReadContract({
+  const { data: campaigns, isLoading, refetch } = useReadContract({
     contract,
     method:
       "function getUserCampaigns(address _user) view returns ((address owner, address campaignAddress, string name, uint256 creationTime)[])",
     params: [account?.address as string],
   });
 
+  useEffect(() => {
+    if (isCreated) {
+      refetch();
+      setIsCreated(false); 
+    }
+  }, [isCreated, refetch]);
+
   return (
-    <div className=" px-4 py-6">
+    <div className="px-4 py-6">
       {/* Dashboard Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">My Campaigns</h1>
-        <div className=''>
+        <div>
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-purple-600 text-white px-5 py-2 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-800 hover:shadow-lg active:scale-95"
@@ -68,7 +76,13 @@ function DashboardPage() {
       </div>
 
       {/* Create Campaign Modal */}
-      {isModalOpen && <CreateCampaignModal setIsModalOpen={setIsModalOpen} contract={contract} />}
+      {isModalOpen && (
+        <CreateCampaignModal 
+          setIsModalOpen={setIsModalOpen} 
+          contract={contract} 
+          setIsCreated={setIsCreated} 
+        />
+      )}
     </div>
   );
 }
