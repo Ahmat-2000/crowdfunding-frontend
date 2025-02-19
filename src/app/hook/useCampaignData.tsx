@@ -63,9 +63,13 @@ const useCampaignData = (campaignAddress: string) => {
     method: "function paused() view returns (bool)",
     params: [],
   });
-  const progressBar = campaignGoal && campaignBalance
+  let progressBar = campaignGoal && campaignBalance
   ? Math.min((Number(campaignBalance) / Number(campaignGoal)) * 100, 100)
   : 0;
+
+  if(campaignState === 1){
+    progressBar = 100;
+  }
 
   const campaignDeadline = deadline && new Date(Number(deadline) * 1000).toUTCString();
   
