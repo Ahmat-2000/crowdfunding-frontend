@@ -38,8 +38,9 @@ const CampaignPage = () => {
   const isCampaignActive = campaignState === 0;
   const isCampaignFailed= campaignState === 2;
   useEffect(() => {
-  alert(isOwner);
-  },[])
+    alert(`campaignOwner: ${campaignOwner} \naccount.address: ${account?.address}`);
+  }, [campaignOwner, account]);
+  
   return (
     <div className="py-5 px-2">
       {isLoading ? (
