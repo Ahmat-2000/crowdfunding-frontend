@@ -33,14 +33,15 @@ const CampaignPage = () => {
     paused,
   } = useCampaignData(campaignAddress as string);
 
-  const isOwner = campaignOwner === account?.address;
+  const isOwner = campaignOwner?.toLowerCase() === account?.address.toLowerCase();
   const isCampaignSuccessful = campaignState === 1;
   const isCampaignActive = campaignState === 0;
   const isCampaignFailed= campaignState === 2;
-  useEffect(() => {
-    alert(`campaignOwner: ${campaignOwner} \naccount.address: ${account?.address}`);
+ /*  useEffect(() => {
+    if(campaignOwner && account)
+      alert(`campaignOwner: ${campaignOwner?.toLowerCase()} \naccount.address: ${account?.address.toLowerCase()}`);
   }, [campaignOwner, account]);
-  
+   */
   return (
     <div className="py-5 px-2">
       {isLoading ? (
