@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import useCampaignData from "@/app/hook/useCampaignData";
 import Link from "next/link";
 import TierCard from "@/app/components/TierCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useActiveAccount, TransactionButton } from "thirdweb/react";
 import CreateTierModal from "@/app/components/CreateTierModal";
 import { prepareContractCall } from "thirdweb";
@@ -37,7 +37,9 @@ const CampaignPage = () => {
   const isCampaignSuccessful = campaignState === 1;
   const isCampaignActive = campaignState === 0;
   const isCampaignFailed= campaignState === 2;
-  
+  useEffect(() => {
+  alert(isOwner);
+  },[])
   return (
     <div className="py-5 px-2">
       {isLoading ? (
@@ -46,7 +48,6 @@ const CampaignPage = () => {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center">
             <h1 className="text-3xl font-bold text-gray-800">{campaignName}</h1>
-
             {isOwner && (
               <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
                 <button
