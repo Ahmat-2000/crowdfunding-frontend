@@ -41,9 +41,10 @@ function DashboardPage() {
         <div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-purple-600 text-white px-5 py-2 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-800 hover:shadow-lg active:scale-95"
+            className="bg-purple-600 font-semibold text-white text-lg px-5 py-2 rounded-md shadow-md transition-all duration-300 hover:bg-purple-800 hover:shadow-lg active:scale-95 flex gap-1 justify-center items-center w-full sm:w-auto"
           >
-            + Create Campaign
+            <span className='font-bold text-xl'>+</span> 
+            <span>Create Campaign</span>
           </button>
         </div>
       </div>

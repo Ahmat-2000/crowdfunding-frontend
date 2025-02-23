@@ -101,7 +101,7 @@ const Navbar = () => {
             <Link
               href="/"
               onClick={() => setIsOpen(false)}
-              className={`block text-sm font-medium transition ${
+              className={`block text-center text-md p-2 border font-semibold rounded-md transition ${
                 isActive("/") ? "text-green-800" : "text-gray-700"
               } hover:text-purple-700`}
             >
@@ -111,9 +111,9 @@ const Navbar = () => {
           {account && (
             <li>
               <Link
-                href="/dashboard"
+                href={`/dashboard/${account.address}`}
                 onClick={() => setIsOpen(false)}
-                className={`block text-sm font-medium transition ${
+                className={`block text-center text-md p-2 font-semibold border rounded-md ransition ${
                   isActive("/dashboard") ? "text-green-800" : "text-gray-700"
                 } hover:text-purple-700`}
               >
@@ -127,7 +127,7 @@ const Navbar = () => {
               client={client}
               theme={lightTheme()}
               detailsButton={{
-                style: { maxHeight: "50px", width: "100%" }
+                style: { maxHeight: "50px",}
               }}
             />
           </li>
